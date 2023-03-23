@@ -20,13 +20,13 @@ public class DataBase  extends Song{
     Connection con;
     Statement stmt;
     PreparedStatement prstm;
-    Connection getConnection() {
+    public Connection getConnection() {
         con = null;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            System.out.println("driver loaded");
+            //System.out.println("driver loaded");
             con = DriverManager.getConnection("jdbc:mysql://localhost:3306/trailjuke", "user", "admin");
-            System.out.println("connection established");
+            //System.out.println("connection established");
         }catch (Exception e){
             System.out.println(e);
         }
@@ -61,6 +61,7 @@ public class DataBase  extends Song{
     }
     public void sortByGenre(String genreName) {
         try {
+            con=getConnection();
             String sql = "SELECT * FROM songs where genre like? ORDER BY genre ASC;";
             prstm =con.prepareStatement(sql);
             prstm.setString(1,"%"+genreName+"%");
@@ -72,7 +73,13 @@ public class DataBase  extends Song{
                 String genre = rs.getString("genre");
                 double duration = rs.getDouble("duration");
                 String path = rs.getString("path");
-                System.out.println(id + " | " + title + " | " + artist + " | " + genre + " | " + duration + " | " + path);
+                System.out.println("+----+-------+-------------------+");
+                System.out.println("Title:    " + title);
+                System.out.println("Artist:   " + artist);
+                System.out.println("Genre:    " + genre);
+                System.out.println("Duration: " + duration);
+                System.out.println("+----+-------+-------------------+");
+               // System.out.println(id + " | " + title + " | " + artist + " | " + genre + " | " + duration + " | " + path);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -83,8 +90,14 @@ public class DataBase  extends Song{
             stmt= con.createStatement();
             String sql = "SELECT * FROM songs order by id;";
             ResultSet rs=stmt.executeQuery(sql);
-            while(rs.next()){
-                System.out.println(rs.getInt(1)+"\t"+rs.getString(3)+"\t\t"+rs.getString(4)+"\t\t"+rs.getString(2));
+            System.out.println("Title                          Artist               Genre                 Duration");
+            System.out.println("----------------------------------------------------------------------------------");
+            while(rs.next()) {
+                System.out.printf("%-30s %-20s %-15s %10.2f%n",
+                        rs.getString("title"),
+                        rs.getString("artist"),
+                        rs.getString("genre"),
+                        Double.parseDouble(rs.getString("duration")));
             }
             return rs;
         } catch (SQLException e) {
@@ -93,20 +106,35 @@ public class DataBase  extends Song{
         return null;
     }
     public ResultSet displayplaylist() {
+        Login l = new Login();
         try {
-            stmt= con.createStatement();
-            String sql = "SELECT * FROM playlists order by id;";
-            ResultSet rs=stmt.executeQuery(sql);
-            while(rs.next()){
-                System.out.println(rs.getString("songName")+"\t\t"+rs.getString("artist")+"\t\t"+rs.getString("user")+"\t"+rs.getString("date_created"));
+            Connection con = getConnection();
+            String username = l.useRname;
+            String sql = "SELECT songName, artist, user FROM playlists WHERE user like ?";
+
+            PreparedStatement prstmt = con.prepareStatement(sql);
+            prstmt.setString(1, username);
+            ResultSet rs = prstmt.executeQuery();
+            System.out.println("-----------------------------------------------------------------------------------------------------");
+            System.out.println("Title                          Artist               user");
+            System.out.println("---------------------------------------------------------");
+            while (rs.next()) {
+                System.out.printf("%-30s %-20s %-15s%n",
+                        rs.getString("songName"),
+                        rs.getString("artist"),
+                        rs.getString("user"));
             }
+            System.out.println("---------------------------------------------------------");
+            System.out.println("-------------------------------------------------------------------------------------------------------");
+
             return rs;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
-    /*public void searchAudio(String songName){
+
+    public void searchAudioTest(String songName){
         try {
             String sql="select * from songs where title like ?;";
             prstm =con.prepareStatement(sql);
@@ -125,7 +153,7 @@ public class DataBase  extends Song{
         }catch (Exception e){
             e.printStackTrace();
         }
-    }*/
+    }
     public void searchAudio(String songName){
         try {
             DataBase d = new DataBase();
@@ -146,7 +174,13 @@ public class DataBase  extends Song{
                 String genre = rs.getString("genre");
                 double duration = rs.getDouble("duration");
                 String path = rs.getString("path");
-                System.out.println("ID: " + id + ", Title: " + songTitle+ ", Artist: " + artist+ ", Genre: " + genre+ ", Duration: " + duration+ ", Path: " + path);
+                //System.out.println("ID: " + id + ", Title: " + songTitle+ ", Artist: " + artist+ ", Genre: " + genre+ ", Duration: " + duration+ ", Path: " + path);
+                System.out.println("+----+-------+-------------------+");
+                System.out.println("Title:    " + songTitle);
+                System.out.println("Artist:   " + artist);
+                System.out.println("Genre:    " + genre);
+                System.out.println("Duration: " + duration);
+                System.out.println("+----+-------+-------------------+");
                 PreparedStatement pstmt = con.prepareStatement("SELECT path FROM songs where title like ?");
                 pstmt.setString(1, "%"+songName+"%");
                 rs = pstmt.executeQuery();
@@ -167,11 +201,8 @@ public class DataBase  extends Song{
                     while (!response.equals("Q")) {
                         System.out.println("" +
                                 "\n P = play" +
-                                "\n S = Stop" +
                                 "\n R = Reset" +
                                 "\n Q = Quit" +
-                                "\n N = Next" +
-                                "\n B = Previous" +
                                 "\n X = Pause");
                         System.out.print("Enter your choice: ");
                         response = scanner.next();
@@ -179,10 +210,6 @@ public class DataBase  extends Song{
                         switch (response) {
                             case ("P"): {
                                 clip.start();
-                                break;
-                            }
-                            case ("S"): {
-                                clip.stop();
                                 break;
                             }
                             case ("R"): {
@@ -267,7 +294,6 @@ public class DataBase  extends Song{
             while (!response.equals("Q")) {
                 System.out.println("" +
                         "\n P = play" +
-                        "\n S = Stop" +
                         "\n R = Reset" +
                         "\n Q = Quit" +
                         "\n N = Next" +
@@ -279,10 +305,6 @@ public class DataBase  extends Song{
                 switch (response) {
                     case ("P"): {
                         clip.start();
-                        break;
-                    }
-                    case ("S"): {
-                        clip.stop();
                         break;
                     }
                     case ("R"): {
@@ -351,7 +373,13 @@ public class DataBase  extends Song{
                 double duration = rs.getDouble("duration");
                 String path = rs.getString("path");
 
-                System.out.println("ID: " + id + ", Title: " + songTitle+ ", Artist: " + artist+ ", Genre: " + genre+ ", Duration: " + duration+ ", Path: " + path);
+                System.out.println("+----+-------+-------------------+");
+                System.out.println("Title:    " + songTitle);
+                System.out.println("Artist:   " + artist);
+                System.out.println("Genre:    " + genre);
+                System.out.println("Duration: " + duration);
+                System.out.println("+----+-------+-------------------+");
+                //System.out.println("ID: " + id + ", Title: " + songTitle+ ", Artist: " + artist+ ", Genre: " + genre+ ", Duration: " + duration+ ", Path: " + path);
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -367,7 +395,7 @@ public class DataBase  extends Song{
             e.printStackTrace();
         }
     }
-    public void createPlaylist( String songName, String artist, String user,String path, Date date_created) {
+   /* public void createPlaylist( String songName, String artist, String user,String path, Date date_created) {
         try {
             String sql = "INSERT INTO playlists (songName,artist, user, path, date_created) VALUES(?,?,?,?,?);";
             prstm = con.prepareStatement(sql);
@@ -381,7 +409,7 @@ public class DataBase  extends Song{
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
+    }*/
     public void removeSongFromPlaylist(String song) {
         try {
             String sql = " delete from playlists where songName=?;";

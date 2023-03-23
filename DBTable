@@ -1,0 +1,19 @@
+CREATE TABLE playlistNames (
+id INT AUTO_INCREMENT PRIMARY KEY,
+playlistName VARCHAR(255) NOT NULL,
+user VARCHAR(30) NOT NULL,
+UNIQUE (playlist_name, user),
+FOREIGN KEY (user) REFERENCES users(userName)
+);
+
+CREATE TABLE playlistNames (
+   playlistNameId INT AUTO_INCREMENT PRIMARY KEY,
+   playlistName VARCHAR(255) NOT NULL,
+   userId int  NOT NULL,
+   FOREIGN KEY (userId) REFERENCES users(userId)
+);
+
+
+SELECT *
+FROM playlists_names
+WHERE user = 'some_user';

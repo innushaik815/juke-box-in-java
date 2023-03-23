@@ -12,8 +12,10 @@
     <loaded-nodes />
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
-    <connection id="b4503f86-3293-4500-ba4c-4093a9fbf886">
-      <console name="Connection" type="STANDARD" schema="mysql" session="Main" />
+    <connection id="f4345f64-84ed-4e12-97a1-ee33f8acea8a">
+      <console name="Connection" type="STANDARD" schema="trailjuke" session="Pool"><![CDATA[select * from users
+select * from playlists
+select * from playlistnames]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
@@ -39,7 +41,7 @@
   </component>
   <component name="DBNavigator.Project.Settings">
     <connections>
-      <connection id="b4503f86-3293-4500-ba4c-4093a9fbf886" active="true" signed="true">
+      <connection id="f4345f64-84ed-4e12-97a1-ee33f8acea8a" active="true" signed="true">
         <database>
           <name value="Connection" />
           <description value="" />
@@ -527,5 +529,8 @@
         </visibility-settings>
       </environment>
     </general-settings>
+  </component>
+  <component name="DBNavigator.Project.StatementExecutionManager">
+    <execution-variables />
   </component>
 </project>
